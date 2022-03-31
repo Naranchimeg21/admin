@@ -1,4 +1,8 @@
-import { callGet, callPost } from '../baseInstance'
+import { callGet, callPost, callDelete } from '../baseInstance'
+
+const createQuiz = async (body: object) => {
+  return await callPost('/quiz/create', body)
+}
 
 const getAllQuiz = async () => {
   return await callGet('/quiz')
@@ -11,4 +15,18 @@ const getQuizByPagination = async (
   return await callPost('/quiz/by/pagination', { page_number, group_number })
 }
 
-export { getAllQuiz, getQuizByPagination }
+const getSingleQuiz = async (quizId: string) => {
+  return await callPost('/quiz/single', { quiz_id: quizId })
+}
+
+const deleteQuiz = async (quizId: string) => {
+  return await callDelete('/quiz/delete/' + quizId)
+}
+
+export {
+  createQuiz,
+  getAllQuiz,
+  getQuizByPagination,
+  getSingleQuiz,
+  deleteQuiz,
+}

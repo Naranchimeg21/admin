@@ -1,9 +1,9 @@
 <script setup lang="ts">
 // Store
-import store from '@/store'
+import store from '../store'
 
 // Utils
-import { destroyAccessToken } from '@/utils/cookie_helper'
+import { destroyAccessToken } from '../utils/cookie_helper'
 
 // Components
 import Avatar from 'primevue/avatar'
@@ -22,7 +22,7 @@ function logout() {
     <Menu as="div" class="relative inline-block text-left">
       <div>
         <MenuButton
-          class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+          class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium rounded-md bg-opacity-20 hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
         >
           <Avatar label="P" />
         </MenuButton>
