@@ -20,7 +20,7 @@ const getSingleQuiz = async (quizId: string) => {
 }
 
 const deleteQuiz = async (quizId: string) => {
-  return await callDelete('/quiz/delete/' + quizId)
+  return await callPost('/quiz/delete', { quiz_id: quizId })
 }
 
 export {

@@ -5,6 +5,10 @@ const getDecodedAccessToken = (token: string) => {
 }
 
 const checkAcessTokenIsExpired = (token: string): boolean => {
+  if (!token) {
+    return false
+  }
+
   let decodedToken: any = getDecodedAccessToken(token)
 
   if (decodedToken.exp < Date.now() / 1000) {

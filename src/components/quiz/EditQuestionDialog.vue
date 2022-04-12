@@ -1,8 +1,9 @@
-<script setup lang="ts">
-import { reactive } from 'vue'
-
+<script lang="ts">
 // Api
 import { createQuiz } from '../../api/quiz'
+
+// Store
+import store from '../../store'
 
 // Components
 import Dialog from 'primevue/dialog'
@@ -13,49 +14,83 @@ import Calendar from 'primevue/calendar'
 import Checkbox from 'primevue/checkbox'
 import SelectButton from 'primevue/selectbutton'
 import ProgressSpinner from 'primevue/progressspinner'
-import { stat } from 'fs/promises'
 
-defineProps({
-  open: Boolean,
-})
-
-const initialState = {
-  name: '',
-  startDate: '',
-  endDate: '',
-  duration: 0,
-  isPublish: false,
-  usePoints: false,
-  method: 'Аnonymous',
-  submitting: false,
+function initialState() {
+  return {
+    name: '',
+    startDate: '',
+    endDate: '',
+    duration: 0,
+    isPublish: false,
+    usePoints: false,
+    method: 'Аnonymous',
+    submitting: false,
+  }
 }
 
-let state = reactive({ ...initialState })
+export default {
+  components: {
+    Dialog,
+    Button,
+    InputText,
+    InputNumber,
+    Calendar,
+    Checkbox,
+    SelectButton,
+    ProgressSpinner,
+  },
+  props: ['open'],
+  emits: {
+    close: null,
+    refreshTable: null,
+  },
+  data: () => initialState(),
+  methods: {
+    resetState() {
+      Object.assign(this.$data, initialState())
+    },
+    saveQuiz() {
+      this.submitting = true
 
-function resetState() {
-  Object.assign(state, initialState)
-}
+      createQuiz({
+        name: this.name,
+        time_limit: this.duration,
+        start_date: this.startDate,
+        end_date: this.endDate,
+        is_published: this.isPublish,
+        use_points: this.usePoints,
+        participation_method: this.method,
+      })
+        .then((response) => {
+          console.log(response)
 
-function saveQuiz() {
-  state.submitting = true
+          if (response.status === 200) {
+            let { data } = response
 
-  createQuiz({
-    name: state.name,
-    time_limit: state.duration,
-    start_date: state.startDate,
-    end_date: state.endDate,
-    is_published: state.isPublish,
-    use_points: state.usePoints,
-    participation_method: state.method,
-  })
-    .then((response) => {
-      console.log(response)
+            store.setMessage({
+              type: 'success',
+              text: data,
+              open: true,
+            })
+          }
 
-      resetState()
-    })
-    .catch((error) => {
-      console.log(error)
-    })
+          this.resetState()
+          this.$emit('close')
+          this.$emit('refreshTable')
+        })
+        .catch((error) => {
+          let { response } = error
+
+          if (response.status === 401) {
+            store.setMessage({
+              type: 'warn',
+              text: response.data,
+              open: true,
+            })
+          }
+        })
+    },
+  },
 }
 </script>
 
@@ -73,12 +108,12 @@ function saveQuiz() {
     <div class="space-y-5">
       <div class="space-y-2">
         <label for=""><span class="text-red-500">*</span> Нэр</label>
-        <InputText type="text" v-model="state.name" class="w-full" />
+        <InputText type="text" v-model="name" class="w-full" />
       </div>
       <div class="space-y-2">
         <label for=""><span class="text-red-500">*</span> Эхлэх огноо</label>
         <Calendar
-          v-model="state.startDate"
+          v-model="startDate"
           :showTime="true"
           :showSeconds="true"
           class="w-full"
@@ -87,7 +122,7 @@ function saveQuiz() {
       <div class="space-y-2">
         <label for=""><span class="text-red-500">*</span> Дуусах огноо</label>
         <Calendar
-          v-model="state.endDate"
+          v-model="endDate"
           :showTime="true"
           :showSeconds="true"
           class="w-full"
@@ -99,7 +134,7 @@ function saveQuiz() {
           <span class="text-gray-400">/зөвхөн тоо оруулна уу!/</span></label
         >
         <InputNumber
-          v-model="state.duration"
+          v-model="duration"
           mode="decimal"
           :useGrouping="false"
           class="w-full"
@@ -110,18 +145,18 @@ function saveQuiz() {
           ><span class="text-red-500">*</span> Оролцооны арга
         </label>
         <SelectButton
-          v-model="state.method"
+          v-model="method"
           class="w-full"
           :options="['Аnonymous', 'Single use link']"
         />
       </div>
       <div class="flex space-x-5">
         <div class="field-checkbox space-x-2">
-          <Checkbox id="isPublish" v-model="state.isPublish" :binary="true" />
+          <Checkbox id="isPublish" v-model="isPublish" :binary="true" />
           <label for="isPublish">Нийтлэх эсэх</label>
         </div>
         <div class="field-checkbox space-x-2">
-          <Checkbox id="isPublish" v-model="state.usePoints" :binary="true" />
+          <Checkbox id="isPublish" v-model="usePoints" :binary="true" />
           <label for="isPublish">Оноотой эсэх</label>
         </div>
       </div>
@@ -135,12 +170,12 @@ function saveQuiz() {
         class="p-button-text !text-red-400 !border !border-red-400 !rounded"
       />
       <Button
-        @click=";[saveQuiz(), $emit('close'), $emit('refreshTable')]"
+        @click="saveQuiz()"
         autofocus
-        :disabled="state.submitting"
+        :disabled="submitting"
         class="space-x-2"
       >
-        <ProgressSpinner v-if="state.submitting" class="h-[20px] w-[20px]" />
+        <ProgressSpinner v-if="submitting" class="h-[20px] w-[20px]" />
         <span>Хадгалах</span>
       </Button>
     </template>

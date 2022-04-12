@@ -31,10 +31,24 @@ function submitForm() {
         setAccessToken(data.access_token)
 
         store.setIsUserLoggedIn(true)
+
+        store.setMessage({
+          type: 'success',
+          text: data.message,
+          open: true,
+        })
       }
     })
     .catch((error) => {
-      console.log(error)
+      let { response } = error
+
+      if (response.status === 401) {
+        store.setMessage({
+          type: 'warn',
+          text: response.data,
+          open: true,
+        })
+      }
     })
 }
 </script>

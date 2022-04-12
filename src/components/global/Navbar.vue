@@ -1,7 +1,9 @@
 <script setup lang="ts">
+// Prime Vue
+import InputText from 'primevue/inputtext'
+
 // Components
 import AvatarVue from '../Avatar.vue'
-import InputText from 'primevue/inputtext'
 </script>
 
 <template>

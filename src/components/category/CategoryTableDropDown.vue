@@ -1,7 +1,4 @@
 <script setup lang="ts">
-// Vue Router
-import { RouterLink } from 'vue-router'
-
 // Components
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { PencilAltIcon, TrashIcon, MenuIcon } from '@heroicons/vue/solid'
@@ -38,21 +35,20 @@ const props = defineProps({
         >
           <div class="px-1 py-1">
             <MenuItem v-slot="{ active }">
-              <RouterLink :to="`/category/edit/` + categoryId">
-                <button
-                  :class="[
-                    active ? 'bg-violet-500 text-white' : 'text-gray-900',
-                    'group flex rounded-md items-center w-full px-2 py-2 text-sm',
-                  ]"
-                >
-                  <PencilAltIcon
-                    :active="active"
-                    class="w-5 h-5 mr-2 text-violet-400"
-                    aria-hidden="true"
-                  />
-                  Засах
-                </button>
-              </RouterLink>
+              <button
+                :class="[
+                  active ? 'bg-violet-500 text-white' : 'text-gray-900',
+                  'group flex rounded-md items-center w-full px-2 py-2 text-sm',
+                ]"
+                @click="$emit('confirmEdit', categoryId)"
+              >
+                <PencilAltIcon
+                  :active="active"
+                  class="w-5 h-5 mr-2 text-violet-400"
+                  aria-hidden="true"
+                />
+                Засах
+              </button>
             </MenuItem>
             <MenuItem v-slot="{ active }">
               <button
@@ -60,7 +56,7 @@ const props = defineProps({
                   active ? 'bg-violet-500 text-white' : 'text-gray-900',
                   'group flex rounded-md items-center w-full px-2 py-2 text-sm',
                 ]"
-                @click="logId"
+                @click="$emit('confirmDelete', categoryId)"
               >
                 <TrashIcon
                   :active="active"

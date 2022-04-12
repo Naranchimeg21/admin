@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { reactive, onBeforeMount } from 'vue'
 
 // Vue Router
 import { useRoute } from 'vue-router'
@@ -15,34 +15,47 @@ import { HomeIcon, QuestionMarkCircleIcon } from '@heroicons/vue/solid'
 
 const route = useRoute()
 
-let activeIndex = ref(null)
-let main = ref(null)
-let question = ref(null)
+let state = reactive({
+  main: {
+    name: '',
+    startDate: '',
+    endDate: '',
+    duration: 0,
+    method: 'Anonymous',
+    isPublished: false,
+    usePoints: false,
+  },
+  question: [],
+})
 
-onMounted(() => {
+function getSingleQuizData() {
   getSingleQuiz(<string>route.params.id)
     .then((response) => {
       if (response.status === 200) {
         let { data } = response
 
-        main.value = {
-          name: data?.name,
-          timeLimit: data?.time_limit,
-          startDate: data?.start_date,
-          endDate: data?.start_date,
-          isPublished: data?.is_published,
-          usePoints: data?.use_points,
-          method: data?.participation_method,
-        }
+        state.main.name = data?.name
+        state.main.startDate = data?.start_date
+        state.main.endDate = data?.end_date
+        state.main.duration = data?.time_limit_by_minutes
+        state.main.method = data?.participation_method
+        state.main.isPublished = data?.is_published
+        state.main.usePoints = data?.use_points
+
+        state.question = data?.questions
       }
     })
     .catch((error) => {
       console.log(error)
     })
-})
+}
 
-watch(main, () => {
-  console.log(main, 'lalriin main')
+function saveQuiz() {
+  console.log(state)
+}
+
+onBeforeMount(() => {
+  getSingleQuizData()
 })
 </script>
 
@@ -63,7 +76,7 @@ watch(main, () => {
               <span>
                 <HomeIcon class="h-5 w-5" />
               </span>
-              <div>main</div>
+              <div>Дэлгэрэнгүй</div>
             </li>
           </router-link>
           <router-link to="question" v-slot="{ isActive }">
@@ -76,13 +89,17 @@ watch(main, () => {
               ]"
             >
               <QuestionMarkCircleIcon class="h-5 w-5" />
-              <div>question</div>
+              <div>Асуулт</div>
             </li>
           </router-link>
         </ul>
-        <router-view :main="main" />
+        <router-view
+          :main="state.main"
+          :questionsArray="state.question"
+          @get-data="getSingleQuizData"
+        />
         <div class="flex flex-row-reverse">
-          <Button label="Хадгалах" class="!ml-5" />
+          <Button label="Хадгалах" class="!ml-5" @click="saveQuiz" />
           <Button label="Цуцлах" class="p-button-outlined" />
         </div>
       </div>

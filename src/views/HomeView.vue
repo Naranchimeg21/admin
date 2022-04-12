@@ -1,38 +1,30 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
-import Dialog from 'primevue/dialog'
-import Button from 'primevue/button'
+import { ref } from 'vue'
 
-const state = reactive({
-  open: false,
+const chartData = ref({
+  labels: ['A', 'B', 'C'],
+  datasets: [
+    {
+      data: [300, 50, 100],
+      backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726'],
+      hoverBackgroundColor: ['#64B5F6', '#81C784', '#FFB74D'],
+    },
+  ],
+})
+
+const lightOptions = ref({
+  plugins: {
+    legend: {
+      labels: {
+        color: '#495057',
+      },
+    },
+  },
 })
 </script>
 
 <template>
-  <main class="h-full flex">
-    <Dialog v-model:visible="state.open" :modal="true">
-      <template #header>
-        <h3>Header</h3>
-      </template>
-
-      Content
-
-      <template #footer>
-        <Button
-          label="No"
-          @click="state.open = false"
-          icon="pi pi-times"
-          class="p-button-text"
-        />
-        <Button label="Yes" icon="pi pi-check" autofocus />
-      </template>
-    </Dialog>
-    <button
-      type="button"
-      @click="state.open = true"
-      class="py-2 px-5 rounded bg-blue-400 font-semibold uppercase m-auto text-white"
-    >
-      Open
-    </button>
+  <main class="w-full flex flex-col p-5">
+    <div class="bg-white">this is dashboard</div>
   </main>
 </template>

@@ -4,8 +4,14 @@ const setAccessToken = (accessToken: string): void => {
   Cookie.set('access-token', accessToken)
 }
 
-const getAccessToken = () => {
-  return Cookie.get('access-token')
+const getAccessToken = (): string | boolean => {
+  let cookie = Cookie.get('access-token')
+
+  if (cookie && cookie !== undefined) {
+    return cookie
+  }
+
+  return false
 }
 
 const destroyAccessToken = (): void => {

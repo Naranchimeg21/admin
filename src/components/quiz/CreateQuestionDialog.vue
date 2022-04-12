@@ -17,13 +17,13 @@ import ProgressSpinner from 'primevue/progressspinner'
 
 function initialState() {
   return {
-    name: '',
-    startDate: '',
-    endDate: '',
-    duration: 0,
-    isPublish: false,
-    usePoints: false,
-    method: 'Аnonymous',
+    text: '',
+    type: 'fill_in',
+    order: 0,
+    isRequired: false,
+    options: [],
+    correct_fill_in: '',
+    optionText: '',
     submitting: false,
   }
 }
@@ -49,7 +49,13 @@ export default {
     resetState() {
       Object.assign(this.$data, initialState())
     },
-    saveQuiz() {
+    enterOption() {
+      this.options.push({
+        text: this.optionText,
+        is_correct: false,
+      })
+    },
+    saveQuestion() {
       this.submitting = true
 
       createQuiz({
@@ -102,62 +108,42 @@ export default {
     class="w-full max-w-[500px]"
   >
     <template #header>
-      <h3 class="font-semibold text-lg">Асуулга үүсгэх</h3>
+      <h3 class="font-semibold text-lg">Асуулт үүсгэх</h3>
     </template>
 
     <div class="space-y-5">
       <div class="space-y-2">
-        <label for=""><span class="text-red-500">*</span> Нэр</label>
-        <InputText type="text" v-model="name" class="w-full" />
+        <label for=""><span class="text-red-500">*</span> Асуулт</label>
+        <InputText type="text" v-model="text" class="w-full" />
       </div>
       <div class="space-y-2">
-        <label for=""><span class="text-red-500">*</span> Эхлэх огноо</label>
-        <Calendar
-          v-model="startDate"
-          :showTime="true"
-          :showSeconds="true"
-          class="w-full"
-        />
-      </div>
-      <div class="space-y-2">
-        <label for=""><span class="text-red-500">*</span> Дуусах огноо</label>
-        <Calendar
-          v-model="endDate"
-          :showTime="true"
-          :showSeconds="true"
-          class="w-full"
-        />
-      </div>
-      <div class="space-y-2">
-        <label for="">
-          <span class="text-red-500">*</span> Үргэлжлэх хугацаа
-          <span class="text-gray-400">/зөвхөн тоо оруулна уу!/</span></label
-        >
+        <label for=""><span class="text-red-500">*</span> Дараалал</label>
         <InputNumber
-          v-model="duration"
+          v-model="order"
           mode="decimal"
           :useGrouping="false"
           class="w-full"
         />
       </div>
       <div class="space-y-2">
-        <label for=""
-          ><span class="text-red-500">*</span> Оролцооны арга
-        </label>
+        <label for=""><span class="text-red-500">*</span> Төрөл</label>
         <SelectButton
-          v-model="method"
+          v-model="type"
           class="w-full"
-          :options="['Аnonymous', 'Single use link']"
+          :options="['fill_in', 'choice', 'multiple_choice']"
         />
       </div>
-      <div class="flex space-x-5">
-        <div class="field-checkbox space-x-2">
-          <Checkbox id="isPublish" v-model="isPublish" :binary="true" />
-          <label for="isPublish">Нийтлэх эсэх</label>
-        </div>
-        <div class="field-checkbox space-x-2">
-          <Checkbox id="isPublish" v-model="usePoints" :binary="true" />
-          <label for="isPublish">Оноотой эсэх</label>
+      <div v-if="type === 'fill_in'" class="space-y-2">
+        <label for=""><span class="text-red-500">*</span> Зөв хариулт</label>
+        <InputText type="text" v-model="correct_fill_in" class="w-full" />
+      </div>
+      <div v-else class="space-y-5">
+        <form class="space-y-2" @submit.prevent="enterOption">
+          <label for="">Сонголт оруулах</label>
+          <InputText type="text" class="w-full" v-model="optionText" />
+        </form>
+        <div v-for="option in options" v-bind:key="option">
+          <div class="bg-gray-200 p-2">{{ option.text }}</div>
         </div>
       </div>
     </div>
@@ -170,7 +156,7 @@ export default {
         class="p-button-text !text-red-400 !border !border-red-400 !rounded"
       />
       <Button
-        @click="saveQuiz()"
+        @click="saveQuestion()"
         autofocus
         :disabled="submitting"
         class="space-x-2"

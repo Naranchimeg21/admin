@@ -2,9 +2,6 @@
 // Vue Router
 import { RouterLink } from 'vue-router'
 
-// Api
-import { deleteQuiz } from '../../api/quiz'
-
 // Components
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { PencilAltIcon, TrashIcon, MenuIcon } from '@heroicons/vue/solid'
@@ -12,16 +9,6 @@ import { PencilAltIcon, TrashIcon, MenuIcon } from '@heroicons/vue/solid'
 const props = defineProps({
   quizId: String,
 })
-
-function destroyQuiz() {
-  deleteQuiz(props.quizId)
-    .then((response) => {
-      console.log(response)
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-}
 </script>
 
 <template>
@@ -73,7 +60,7 @@ function destroyQuiz() {
                   active ? 'bg-violet-500 text-white' : 'text-gray-900',
                   'group flex rounded-md items-center w-full px-2 py-2 text-sm',
                 ]"
-                @click="destroyQuiz"
+                @click="$emit('confirmDelete', quizId)"
               >
                 <TrashIcon
                   :active="active"
